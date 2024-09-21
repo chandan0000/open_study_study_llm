@@ -18,6 +18,10 @@ impl MigrationTrait for Migration {
             .get_connection()
             .execute_unprepared(r#"CREATE TYPE "user_role" AS ENUM ('admin', 'user');"#)
             .await?;
+        manager
+            .get_connection()
+            .execute_unprepared(r#"CREATE EXTENSION IF NOT EXISTS "uuid-ossp";"#)
+            .await?;
 
         // Step 2: Create the 'users' table
         manager
@@ -28,9 +32,15 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(Users::Id)
                             .integer()
-                            .not_null()
+                            .auto_increment()
                             .primary_key()
-                            .auto_increment(),
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Users::Uuid)
+                            .uuid() // Change from integer to UUID type
+                            .not_null()
+                            .default(Expr::cust("uuid_generate_v4()")), // Set default to auto-generate UUID
                     )
                     .col(
                         ColumnDef::new(Users::Role)
@@ -45,13 +55,24 @@ impl MigrationTrait for Migration {
                             .string_len(255),
                     )
                     .col(
-                        ColumnDef::new(Users::GithubLink)
+                        ColumnDef::new(Users::EmailId)
                             .string()
+                            .not_null()
+                            .unique_key()
                             .string_len(255),
-                    ).col(
-                        ColumnDef::new(Users::LinkdinLink)
+                    )
+                    .col(
+                        ColumnDef::new(Users::Password)
                             .string()
+                            .not_null()
                             .string_len(255),
+                    )
+                    .col(ColumnDef::new(Users::GithubLink).string().string_len(255))
+                    .col(ColumnDef::new(Users::LinkdinLink).string().string_len(255))
+                    .col(
+                        ColumnDef::new(Users::IsVerdified)
+                            .boolean()
+                            .default(Expr::value(false)),
                     )
                     .col(ColumnDef::new(Users::DeleteAccountDate).timestamp_with_time_zone())
                     .col(
@@ -70,6 +91,16 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx-users-email")
+                    .table(Users::Table)
+                    .col(Users::EmailId)
+                    .unique()
+                    .to_owned(),
+            )
+            .await?;
         // Step 3: Create a function to update 'update_date' on record modification
         let create_function = match manager.get_database_backend() {
             DbBackend::Postgres => {
@@ -107,6 +138,15 @@ impl MigrationTrait for Migration {
 
     // Revert the migration
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .drop_index(
+                Index::drop()
+                    .name("idx-users-email")
+                    .table(Users::Table)
+                    .to_owned(),
+            )
+            .await?;
+
         // Step 4: Drop the trigger
         manager
             .get_connection()
@@ -129,6 +169,10 @@ impl MigrationTrait for Migration {
             .get_connection()
             .execute_unprepared(r#"DROP TYPE IF EXISTS "user_role";"#)
             .await?;
+        manager
+            .get_connection()
+            .execute_unprepared(r#"DROP EXTENSION IF EXISTS "uuid-ossp";"#)
+            .await?;
 
         Ok(())
     }
@@ -139,10 +183,15 @@ impl MigrationTrait for Migration {
 enum Users {
     Table,
     Id,
+
+    Uuid,
     Role,
     Fullname,
+    EmailId,
+    Password,
     GithubLink,
     LinkdinLink,
+    IsVerdified,
     DeleteAccountDate,
     UpdateDate,
     CreateDate,

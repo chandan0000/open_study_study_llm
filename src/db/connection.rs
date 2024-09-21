@@ -2,28 +2,20 @@ use dotenvy_macro::dotenv;
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 // use std::env;
 use anyhow::{self, Error};
-use log;
-use std::env;
+use log::{self, info};
 use std::time::Duration;
 // use std::env;
 
-pub async fn establish_connection() -> Result<DatabaseConnection, Error> {
-    // let database_url = env!("DATABASE_URL");
-    // let database_url =  dotenv!("DATABASE_URL");
-    // Read environment variables
-    let db_host = dotenv!("DB_HOST");
-    let db_user = dotenv!("DB_USER");
-    let db_password = dotenv!("DB_PASSWORD");
-    let db_name = dotenv!("DB_NAME");
-    let db_port = dotenv!("DB_PORT");
-
+pub async fn establish_connection(
+    database_url:&str
+) -> Result<DatabaseConnection, Error> {
+ 
     // Construct the database URL
-    let database_url = format!(
-        "postgres://{}:{}@{}:{}/{}",
-        db_user, db_password, db_host, db_port, db_name
-    );
+    // "DATABASE_URL");
+    // let database_url = dotenv!("DATABASE_URL");
 
-    //   let database_url = "postgresql://postgres:12345@localhost:5435/jh";
+    info!("database url {database_url}");
+
     let mut opt = ConnectOptions::new(database_url);
     opt.max_connections(100)
         .min_connections(5)

@@ -1,5 +1,5 @@
 [package]
-name = "open_study_study_llm"
+name = "openstudystudyllm"
 version = "0.1.0"
 edition = "2021"
 
@@ -12,7 +12,8 @@ entity = { path = "entity" }
 migration = { path = "migration" }
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "full"] }
 axum = { version = "0.7.5", features = ["macros", "multipart"] }
-tower-http = { version = "0.5.2", features = ["cors", "fs"] }
+tower-http = { version = "0.6.0", features = ["cors", "fs", "full"] }
+
 serde = { version = "1.0.210", features = ["derive"] }
 sea-orm = { version = "1.0.1", features = ["sqlx-postgres", "runtime-tokio-rustls"] }
 uuid = { version = "1.10.0", features = ["v4", "serde"] }
@@ -36,4 +37,5 @@ anyhow = "1.0.89"
 log = "0.4.22"
 rand = "0.8.5"
 dotenvy = "0.15.7"
-sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres"] }
+lettre = "0.11.9"
+    

@@ -8,8 +8,12 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub role: Option<UserRole>,
+    pub uuid: Uuid,
+    pub role: UserRole,
     pub fullname: String,
+    #[sea_orm(unique)]
+    pub email_id: String,
+    pub password: String,
     pub github_link: Option<String>,
     pub linkdin_link: Option<String>,
     pub delete_account_date: Option<DateTimeWithTimeZone>,
