@@ -66,7 +66,6 @@ pub async fn sign_up(
         ..Default::default()
     };
 
-    // Save the new user to the database
     let user = user_active.save(db).await.map_err(|error| {
         let error_message = error.to_string();
         if error_message.contains("duplicate key value violates unique constraint") {
@@ -367,8 +366,8 @@ pub async fn forget_password(
             // Create the reset password link (you can use your frontend URL here)
             let reset_link = format!(
                 "{}/reset-password?token={}",
-                dotenv!("SERVER_HOST_URL")
-                ,reset_token
+                dotenv!("SERVER_HOST_URL"),
+                reset_token
             );
 
             // Send email with reset password link
@@ -436,7 +435,7 @@ pub async fn reset_password(
                 )
             })?;
 
-        if let Some( user) = user {
+        if let Some(user) = user {
             // Step 4: Hash the new password
             let hashed_password = hash_password(&data.new_password)?;
 
