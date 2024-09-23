@@ -2,5 +2,7 @@
 
 pub mod prelude;
 
+pub mod password_reset_tokens;
 pub mod sea_orm_active_enums;
+pub mod token_verifcation;
 pub mod users;

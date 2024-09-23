@@ -1,4 +1,3 @@
-use dotenvy_macro::dotenv;
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 // use std::env;
 use anyhow::{self, Error};

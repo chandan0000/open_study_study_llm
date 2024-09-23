@@ -14,14 +14,33 @@ pub struct Model {
     #[sea_orm(unique)]
     pub email_id: String,
     pub password: String,
+    pub profile_pic: Option<String>,
     pub github_link: Option<String>,
     pub linkdin_link: Option<String>,
+    pub is_verdified: Option<bool>,
     pub delete_account_date: Option<DateTimeWithTimeZone>,
     pub update_date: DateTimeWithTimeZone,
     pub create_date: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+pub enum Relation {
+    #[sea_orm(has_many = "super::password_reset_tokens::Entity")]
+    PasswordResetTokens,
+    #[sea_orm(has_many = "super::token_verifcation::Entity")]
+    TokenVerifcation,
+}
+
+impl Related<super::password_reset_tokens::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::PasswordResetTokens.def()
+    }
+}
+
+impl Related<super::token_verifcation::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::TokenVerifcation.def()
+    }
+}
 
 impl ActiveModelBehavior for ActiveModel {}

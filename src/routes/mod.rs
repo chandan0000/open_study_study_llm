@@ -1,6 +1,6 @@
 mod v1;
 mod v2;
-use axum::{extract::FromRef, http::StatusCode, Router};
+use axum::{http::StatusCode, Router};
 use sea_orm::DatabaseConnection;
 
 use crate::app_state::AppState;

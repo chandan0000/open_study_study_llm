@@ -67,6 +67,7 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .string_len(255),
                     )
+                    .col(ColumnDef::new(Users::ProfilePic).string().string_len(255))
                     .col(ColumnDef::new(Users::GithubLink).string().string_len(255))
                     .col(ColumnDef::new(Users::LinkdinLink).string().string_len(255))
                     .col(
@@ -180,7 +181,7 @@ impl MigrationTrait for Migration {
 
 // Define the columns of the 'users' table
 #[derive(Iden)]
-enum Users {
+pub  enum Users {
     Table,
     Id,
 
@@ -189,6 +190,7 @@ enum Users {
     Fullname,
     EmailId,
     Password,
+    ProfilePic,
     GithubLink,
     LinkdinLink,
     IsVerdified,

@@ -3,13 +3,14 @@ mod db;
 mod mail;
 mod middleware;
 mod routes;
+mod  handler;
+
 mod utilities;
 
 use dotenvy_macro::dotenv;
 
 use axum::{routing::get, Router};
 use db::connection::establish_connection;
-use mail::{mails::send_welcome_email, sendmail::send_email};
 use migration::MigratorTrait;
 use routes::create_routes;
 use tracing::{info, level_filters::LevelFilter};
@@ -30,17 +31,17 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
         .route("/", get(|| async { "<h1> i am alive </h1>".to_string() }))
         .nest("/api", create_routes(db));
 
-    let send_welcome_email_result = send_welcome_email("kumarchandan41u@gmail.com", "kumarchanan").await;
+    // let send_welcome_email_result = send_welcome_email("kumarchandandbg1@gmail.com", "chandan").await;
 
-    if let Err(e) = send_welcome_email_result {
-        eprintln!("Failed to send welcome email: {}", e);
-    }
+    // if let Err(e) = send_welcome_email_result {
+    //     eprintln!("Failed to send welcome email: {}", e);
+    // }
 
-    // let host_url = dotenv!("HOST_URL");
-    // let host_port = dotenv!("HOST_PORT");
+ 
 
-    info!("Starting server at http://0.0.0.0:8080");
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
+    info!("Starting server at http://127.0.0.0:8080");
+
+    let listener = tokio::net::TcpListener::bind("127.0.0.0:8080").await.unwrap();
     axum::serve(listener, app).await.unwrap();
     Ok(())
 }

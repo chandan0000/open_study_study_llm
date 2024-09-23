@@ -4,8 +4,8 @@ use axum::{
     middleware::Next,
     response::Response,
 };
-use entity::users::{self, Entity as Users};
-use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter};
+use entity::users::{Entity as Users};
+use sea_orm::{DatabaseConnection, EntityTrait};
 
 use crate::utilities::{app_error::AppError, jwt::validate_token, token_wrapper::TokenWrapper};
 
