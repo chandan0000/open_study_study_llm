@@ -10,7 +10,15 @@ path = "src/mod.rs"
 
 [dependencies]
 serde = { version = "1.0.210", features = ["derive"] }
+async-graphql = { version = "7.0.10", features = ["decimal", "chrono", "dataloader", "dynamic-schema"] }
+
 
 [dependencies.sea-orm]
 #path = "../../../" # remove this line in your own project
 version = "1.0.1" # sea-orm
+
+
+
+[dependencies.seaography]
+version = "1.0.0" # seaography version
+features = ["with-decimal", "with-chrono"]

@@ -3,30 +3,31 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "token_verifcation")]
+#[sea_orm(table_name = "payments")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub user_id: i32,
-    pub token: String,
-    pub expires_at: DateTime,
+    pub order_id: Option<i32>,
+    pub payment_status: Option<String>,
+    pub payment_method: Option<String>,
+    pub payment_date: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::users::Entity",
-        from = "Column::UserId",
-        to = "super::users::Column::Id",
+        belongs_to = "super::orders::Entity",
+        from = "Column::OrderId",
+        to = "super::orders::Column::Id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    Users,
+    Orders,
 }
 
-impl Related<super::users::Entity> for Entity {
+impl Related<super::orders::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Users.def()
+        Relation::Orders.def()
     }
 }
 

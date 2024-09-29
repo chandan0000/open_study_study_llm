@@ -4,5 +4,4 @@ use sea_orm::DatabaseConnection;
 #[derive(Clone, FromRef)]
 pub struct AppState {
     pub database: DatabaseConnection,
-    
 }

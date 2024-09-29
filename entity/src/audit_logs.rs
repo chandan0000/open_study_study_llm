@@ -3,13 +3,15 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "token_verifcation")]
+#[sea_orm(table_name = "audit_logs")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub user_id: i32,
-    pub token: String,
-    pub expires_at: DateTime,
+    pub user_id: Option<i32>,
+    pub action: Option<String>,
+    #[sea_orm(column_type = "Text", nullable)]
+    pub details: Option<String>,
+    pub created_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

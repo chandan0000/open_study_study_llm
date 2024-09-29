@@ -3,17 +3,18 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "token_verifcation")]
+#[sea_orm(table_name = "cart")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub user_id: i32,
-    pub token: String,
-    pub expires_at: DateTime,
+    pub user_id: Option<i32>,
+    pub created_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::cart_items::Entity")]
+    CartItems,
     #[sea_orm(
         belongs_to = "super::users::Entity",
         from = "Column::UserId",
@@ -22,6 +23,12 @@ pub enum Relation {
         on_delete = "Cascade"
     )]
     Users,
+}
+
+impl Related<super::cart_items::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::CartItems.def()
+    }
 }
 
 impl Related<super::users::Entity> for Entity {
