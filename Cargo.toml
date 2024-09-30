@@ -40,6 +40,7 @@ dotenvy = "0.15.7"
 lettre = "0.11.9"
 async-graphql = { version = "7.0.11", features = ["decimal", "chrono", "dataloader", "dynamic-schema"] }
 async-graphql-axum = "7.0.11"
+tower = { version = "0.5.1", features = ["full"] }
 
 
 [dependencies.seaography]
@@ -47,3 +48,35 @@ version = "1.0.0" # seaography version
 features = ["with-decimal", "with-chrono"]
 
 
+
+
+
+
+[profile.release]
+# Opt for maximum optimization level
+opt-level = 3
+
+# Use link-time optimization (LTO) for better performance
+lto = "fat"
+
+# Strip debug symbols to reduce binary size
+debug = false
+
+# Enable codegen units for better optimization at the cost of slower compile times
+codegen-units = 1
+
+# Enable incremental compilation for faster builds (usually useful for debug mode)
+# Not typically used in release mode because it can slightly increase binary size
+incremental = false
+
+# Enable panic handling to use "abort" strategy instead of unwinding
+# This reduces binary size by avoiding extra error-handling code
+panic = "abort"
+
+# Control overflow checks in release mode (disabling can improve performance)
+# overflow-checks = false
+
+# Enable frame pointers (can be useful for debugging even in release mode)
+# This makes the binary slightly larger but aids in stack trace generation
+# in case of crashes.
+# debug-assertions = false

@@ -2,7 +2,7 @@ use axum::{middleware, routing::get, Router};
 
 use crate::{
     app_state::AppState,
-    handler::users::{delete_user, get_all_users, get_user_by_id, update_user},
+    handler::users_handler::{delete_user, get_all_users, get_user_by_id, update_user},
     api_middleware::auth_middleware::require_authentication,
 };
 
