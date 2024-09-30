@@ -1,13 +1,13 @@
 use crate::{
     api_middleware::admin_midleware::require_admin,
-    app_state::{self, AppState},
+    app_state::{AppState},
     handler::product_handler::{
         create_product, delete_product, get_all_products, get_product_by_id, update_product,
     },
 };
 use axum::{
     middleware,
-    routing::{delete, get, post, put},
+    routing::{get, post},
     Router,
 };
 

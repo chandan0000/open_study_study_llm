@@ -1,7 +1,7 @@
 use crate::{
-    api_middleware::auth_middleware::require_authentication, app_state::{self, AppState}, handler::cart_item_handler::{create_cart_item, delete_cart_item, get_all_cart_items, get_cart_item_by_id, update_cart_item}
+    api_middleware::auth_middleware::require_authentication, app_state::{AppState}, handler::cart_item_handler::{create_cart_item, delete_cart_item, get_all_cart_items, get_cart_item_by_id, update_cart_item}
 };
-use axum::{middleware, routing::{delete, get, post, put}, Router};
+use axum::{middleware, routing::{get, post}, Router};
  
 pub fn cart_item_route(app_state:AppState) -> Router<AppState> {
  

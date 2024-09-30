@@ -8,7 +8,7 @@ use axum::{
 use entity::products::{self, Entity as Products};
 use sea_orm::{
     prelude::{DateTimeWithTimeZone, Decimal},
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set,
+    ActiveModelTrait, DatabaseConnection, EntityTrait, Set,
 };
 use serde::{Deserialize, Serialize};
 

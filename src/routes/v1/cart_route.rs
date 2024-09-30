@@ -1,14 +1,13 @@
 use crate::{
     api_middleware::auth_middleware::require_authentication,
-    app_state::{self, AppState},
+    app_state::{AppState},
     handler::cart_handler::{create_cart, delete_cart, get_all_carts, get_cart_by_id, update_cart},
 };
 use axum::{
     middleware,
-    routing::{delete, get, post, put},
+    routing::{get, post},
     Router,
 };
-use tower::ServiceBuilder;
 
 pub fn cart_route(app_state: AppState) -> Router<AppState> {
     Router::new()

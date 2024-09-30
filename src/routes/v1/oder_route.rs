@@ -6,7 +6,7 @@ use crate::{
 use axum::{
 
     middleware,
-    routing::{get, post, put, delete},
+    routing::{get, post},
     Router,
 };
 

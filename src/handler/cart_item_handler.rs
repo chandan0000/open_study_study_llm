@@ -6,7 +6,7 @@ use axum::{
     Json,
 };
 use entity::cart_items::{self, Entity as CartItems};
-use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
+use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, Set};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
