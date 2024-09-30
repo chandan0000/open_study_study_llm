@@ -4,14 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = [".", "axum-graphql-seaorm", "entity",   "migration"]
+members = [".", "entity",   "migration"]
 
 
 [dependencies]
 entity = { path = "entity" }
 migration = { path = "migration" }
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "full"] }
-axum = { version = "0.7.6", features = ["macros", "multipart"] }
+axum = { version = "0.7.7", features = ["macros", "multipart"] }
 tower-http = { version = "0.6.1", features = ["cors", "fs", "full"] }
 
 serde = { version = "1.0.210", features = ["derive"] }
@@ -38,11 +38,12 @@ log = "0.4.22"
 rand = "0.8.5"
 dotenvy = "0.15.7"
 lettre = "0.11.9"
-async-graphql = { version = "7.0.10", features = ["decimal", "chrono", "dataloader", "dynamic-schema"] }
-async-graphql-axum = "7.0.10"
+async-graphql = { version = "7.0.11", features = ["decimal", "chrono", "dataloader", "dynamic-schema"] }
+async-graphql-axum = "7.0.11"
 
 
 [dependencies.seaography]
 version = "1.0.0" # seaography version
 features = ["with-decimal", "with-chrono"]
+
 
