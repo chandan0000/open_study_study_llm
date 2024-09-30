@@ -1,6 +1,4 @@
 use async_graphql::dynamic::*;
-use entity::sea_orm_active_enums::UserRole;
-use entity::*;
 use sea_orm::DatabaseConnection;
 use seaography::{Builder, BuilderContext};
 
@@ -11,7 +9,7 @@ pub fn schema(
     depth: Option<usize>,
     complexity: Option<usize>,
 ) -> Result<Schema, SchemaError> {
-    let mut builder = Builder::new(&CONTEXT, database.clone());
+    let builder = Builder::new(&CONTEXT, database.clone());
     // seaography::register_entities!(builder, [password_reset_tokens, token_verifcation, users,]);
     // builder.register_enumeration::<UserRole>();
     let schema = builder.schema_builder();

@@ -1,17 +1,13 @@
-use crate::{
-    app_state::AppState,
-    utilities::{app_error::AppError, jwt::validate_token},
-};
+use crate::utilities::{app_error::AppError, jwt::validate_token};
 use axum::{
     extract::{Request, State},
     http::StatusCode,
     middleware::Next,
     response::Response,
 };
-use axum_extra::headers::{authorization::Bearer, Authorization, HeaderMapExt};
 
 use entity::users::Entity as Users;
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::{DatabaseConnection, EntityTrait};
 
 pub async fn require_authentication(
     State(db): State<DatabaseConnection>,

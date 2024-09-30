@@ -1,5 +1,4 @@
-use axum::{extract::State, routing::get, Router};
-use sea_orm::DatabaseConnection;
+use axum::{routing::get, Router};
 mod auth_route;
 mod users_route;
 

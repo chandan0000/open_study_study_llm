@@ -1,5 +1,4 @@
 use axum::{middleware, routing::get, Router};
-use sea_orm::DatabaseConnection;
 
 use crate::{
     app_state::AppState,

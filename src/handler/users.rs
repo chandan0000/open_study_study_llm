@@ -5,8 +5,7 @@ use axum::{
     Json,
 };
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, PaginatorTrait,
-    QueryFilter, Set,
+    ActiveModelTrait, DatabaseConnection, EntityTrait, PaginatorTrait, Set,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
