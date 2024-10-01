@@ -5,4 +5,6 @@ pub mod cart_handler;
 pub mod product_handler;
 pub mod cart_item_handler;
 pub mod order_items_handler;
-pub mod oder_handler;
+pub mod order_handler;
+pub mod discounts_handler;
+pub mod reviews_handler;
