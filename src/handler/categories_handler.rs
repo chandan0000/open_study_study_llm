@@ -2,39 +2,51 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::IntoResponse,
-    Json,
+    Extension, Json,
 };
-use sea_orm::{prelude::DateTimeWithTimeZone, ActiveModelTrait, DatabaseConnection, EntityTrait, Set};
+use sea_orm::{
+    prelude::DateTimeWithTimeZone, ActiveModelTrait, DatabaseConnection, EntityTrait, Set,
+};
 use serde::{Deserialize, Serialize};
 
-use entity::categories::{self, Entity as Categories};
 use crate::utilities::app_error::AppError;
+use entity::categories::{self, Entity as Categories};
+use entity::{sea_orm_active_enums::UserRole, users::Model as UserModel};
 
 #[derive(Serialize, Deserialize)]
 pub struct CategoryResponse {
-  pub  id: i32,
-  pub  name: String,
-  pub  description: Option<String>,
-  pub  created_at: Option<DateTimeWithTimeZone>,
-  pub  updated_at: Option<DateTimeWithTimeZone>,
+    pub id: i32,
+    pub name: String,
+    pub description: Option<String>,
+    pub created_at: Option<DateTimeWithTimeZone>,
+    pub updated_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Deserialize)]
 pub struct CreateCategory {
-   pub name: String,
-   pub description: Option<String>,
+    pub name: String,
+    pub description: Option<String>,
 }
 
 #[derive(Deserialize)]
 pub struct UpdateCategory {
-   pub name: Option<String>,
-   pub description: Option<String>,
+    pub name: Option<String>,
+    pub description: Option<String>,
 }
 
 pub async fn create_category(
+    Extension(user): Extension<UserModel>,
     State(db): State<DatabaseConnection>,
     Json(input): Json<CreateCategory>,
 ) -> Result<Json<CategoryResponse>, AppError> {
+    // Check if the user is an admin
+    if user.role != UserRole::Admin {
+        return Err(AppError::new(
+            StatusCode::FORBIDDEN,
+            "You do not have permission to create a category.",
+        ));
+    }
+
     let new_category = categories::ActiveModel {
         name: Set(input.name),
         description: Set(input.description),
@@ -86,15 +98,12 @@ pub async fn get_category_by_id(
 pub async fn get_all_categories(
     State(db): State<DatabaseConnection>,
 ) -> Result<Json<Vec<CategoryResponse>>, AppError> {
-    let categories = Categories::find()
-        .all(&db)
-        .await
-        .map_err(|_| {
-            AppError::new(
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "Something went wrong, please try again.",
-            )
-        })?;
+    let categories = Categories::find().all(&db).await.map_err(|_| {
+        AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Something went wrong, please try again.",
+        )
+    })?;
 
     let category_responses: Vec<CategoryResponse> = categories
         .into_iter()
@@ -111,10 +120,20 @@ pub async fn get_all_categories(
 }
 
 pub async fn update_category(
+    Extension(user): Extension<UserModel>,
+
     State(db): State<DatabaseConnection>,
     Path(category_id): Path<i32>,
     Json(input): Json<UpdateCategory>,
 ) -> Result<Json<CategoryResponse>, AppError> {
+    if user.role != UserRole::Admin {
+        return Err(AppError::new(
+            StatusCode::FORBIDDEN,
+            "You do not have permission to create a category.",
+        ));
+    }
+    
+
     let mut category: categories::ActiveModel = Categories::find_by_id(category_id)
         .one(&db)
         .await
@@ -131,7 +150,7 @@ pub async fn update_category(
         category.name = Set(name);
     }
     // if let Some(description) = input.description {
-        category.description = Set(input.description);
+    category.description = Set(input.description);
     // }
 
     let category = category.update(&db).await.map_err(|_| {
@@ -154,12 +173,18 @@ pub async fn delete_category(
     State(db): State<DatabaseConnection>,
     Path(category_id): Path<i32>,
 ) -> Result<impl IntoResponse, AppError> {
-    Categories::delete_by_id(category_id).exec(&db).await.map_err(|_| {
-        AppError::new(
-            StatusCode::INTERNAL_SERVER_ERROR,
-            "Something went wrong, please try again.",
-        )
-    })?;
+    Categories::delete_by_id(category_id)
+        .exec(&db)
+        .await
+        .map_err(|_| {
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Something went wrong, please try again.",
+            )
+        })?;
 
-    Ok((StatusCode::OK, format!("Category with id {} deleted", category_id)))
+    Ok((
+        StatusCode::OK,
+        format!("Category with id {} deleted", category_id),
+    ))
 }

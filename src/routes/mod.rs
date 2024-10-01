@@ -12,10 +12,7 @@ pub fn create_routes(database: DatabaseConnection) -> Router {
         .nest("/v1", v1::create_v1_routes(app_state.clone())) // Pass app_state to v1 routes
         .nest("/v2", v2::create_v2_routes()) // Assuming v2 doesn't need AppState, if it does, pass it similarly
         .fallback(fallback)
-        .layer(axum::middleware::from_fn_with_state(
-            app_state.clone(), // Pass state to middleware
-            require_authentication,
-        ))
+       
         .with_state(app_state) // Set the AppState for the root router
 }
 

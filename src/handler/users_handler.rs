@@ -2,16 +2,13 @@ use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
     response::IntoResponse,
-    Json,
+    Extension, Json,
 };
-use sea_orm::{
-    ActiveModelTrait, DatabaseConnection, EntityTrait, PaginatorTrait, Set,
-};
+use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, PaginatorTrait, Set};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use entity::users;
-use entity::users::Entity as Users;
+use entity::users::{self, Entity as Users, Model as UserModel};
 
 use crate::utilities::app_error::AppError;
 
@@ -30,14 +27,13 @@ pub struct UserResponse {
     pub profile_pic: Option<String>,
     pub github_link: Option<String>,
     pub linkdin_link: Option<String>,
-    pub is_verdified: Option<bool>,
 }
 
 pub async fn get_user_by_id(
+    Extension(user): Extension<UserModel>,
     State(db): State<DatabaseConnection>,
-    Path(user_id): Path<i32>,
 ) -> Result<Json<UserResponse>, AppError> {
-    let user = Users::find_by_id(user_id).one(&db).await.map_err(|_| {
+    let user = Users::find_by_id(user.id).one(&db).await.map_err(|_| {
         AppError::new(
             StatusCode::INTERNAL_SERVER_ERROR,
             "Something went wrong, please try again.",
@@ -53,8 +49,7 @@ pub async fn get_user_by_id(
             profile_pic: user.profile_pic,
             github_link: user.github_link,
             linkdin_link: user.linkdin_link,
-            is_verdified: user.is_verdified,
-        })),
+         })),
         None => Err(AppError::new(StatusCode::NOT_FOUND, "User not found")),
     }
 }
@@ -126,7 +121,6 @@ pub async fn get_all_users(
             profile_pic: user.profile_pic,
             github_link: user.github_link,
             linkdin_link: user.linkdin_link,
-            is_verdified: user.is_verdified,
         })
         .collect();
 
@@ -136,19 +130,17 @@ pub async fn get_all_users(
 #[derive(Deserialize)]
 pub struct UpdateUser {
     pub fullname: Option<String>,
-    pub email_id: Option<String>,
     pub profile_pic: Option<String>,
     pub github_link: Option<String>,
     pub linkdin_link: Option<String>,
-    pub is_verdified: Option<bool>,
 }
 
 pub async fn update_user(
+    Extension(users): Extension<UserModel>,
     State(db): State<DatabaseConnection>,
-    Path(user_id): Path<i32>,
     Json(user): Json<UpdateUser>,
 ) -> Result<Json<UserResponse>, AppError> {
-    let mut user_model: users::ActiveModel = Users::find_by_id(user_id)
+    let mut user_model: users::ActiveModel = Users::find_by_id(users.id)
         .one(&db)
         .await
         .map_err(|_| {
@@ -163,9 +155,7 @@ pub async fn update_user(
     if let Some(fullname) = &user.fullname {
         user_model.fullname = Set(fullname.clone());
     }
-    if let Some(email_id) = &user.email_id {
-        user_model.email_id = Set(email_id.clone());
-    }
+    
     if let Some(profile_pic) = &user.profile_pic {
         user_model.profile_pic = Set(Some(profile_pic.clone()));
     }
@@ -174,9 +164,6 @@ pub async fn update_user(
     }
     if let Some(linkdin_link) = &user.linkdin_link {
         user_model.linkdin_link = Set(Some(linkdin_link.clone()));
-    }
-    if let Some(is_verdified) = user.is_verdified {
-        user_model.is_verdified = Set(Some(is_verdified));
     }
 
     let user = user_model.update(&db).await.map_err(|_| {
@@ -194,20 +181,20 @@ pub async fn update_user(
         profile_pic: user.profile_pic,
         github_link: user.github_link,
         linkdin_link: user.linkdin_link,
-        is_verdified: user.is_verdified,
-    }))
+     }))
 }
 
 pub async fn delete_user(
+    Extension(user): Extension<UserModel>,
+
     State(db): State<DatabaseConnection>,
-    Path(user_id): Path<i32>,
 ) -> Result<impl IntoResponse, AppError> {
-    Users::delete_by_id(user_id).exec(&db).await.map_err(|_| {
+    Users::delete_by_id(user.id).exec(&db).await.map_err(|_| {
         AppError::new(
             StatusCode::INTERNAL_SERVER_ERROR,
             "Something went wrong, please try again.",
         )
     })?;
 
-    Ok((StatusCode::OK, format!("User with id {} deleted", user_id)))
+    Ok((StatusCode::OK, format!("User with id {} deleted", user.id)))
 }

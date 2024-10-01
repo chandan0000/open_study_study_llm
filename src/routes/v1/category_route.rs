@@ -27,4 +27,5 @@ pub fn category_route(app_state: AppState) -> Router<AppState> {
             require_admin,
         ))
         .route("/categories", get(get_all_categories))
+        .route("/categories_by_id/:id", get(get_category_by_id))
 }

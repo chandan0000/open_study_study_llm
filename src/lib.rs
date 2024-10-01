@@ -1,14 +1,13 @@
+mod api_middleware;
 mod app_state;
 mod db;
+mod graphql;
 mod handler;
 mod mail;
-mod api_middleware;
-mod routes;
-mod graphql;
-
 mod query_root;
+mod routes;
 mod utilities;
-use async_graphql::http::{ GraphiQLSource};
+use async_graphql::http::GraphiQLSource;
 use dotenvy_macro::dotenv;
 
 use axum::{
@@ -43,16 +42,19 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     // Run all pending migrations
     // Migrator::up(&db, None).await.unwrap();
 
-    migration::Migrator::up(&db, None).await?;
-    let schema = crate::query_root::schema(db.clone(), None, None)?;
+    // migration::Migrator::up(&db, None).await?;
+    // let schema = crate::query_root::schema(db.clone(), None, None)?;
 
     let app = Router::new()
-        .route("/health", get(|| async { "<h1> i am alive </h1>".to_string() }))
         .route(
-            "/",
-            get(graphql_playground).post_service(GraphQL::new(schema.clone())),
+            "/health",
+            get(|| async { "<h1> i am alive </h1>".to_string() }),
         )
-        .route_service("/ws", GraphQLSubscription::new(schema))
+        // .route(
+        //     "/",
+        //     get(graphql_playground).post_service(GraphQL::new(schema.clone())),
+        // )
+        // .route_service("/ws", GraphQLSubscription::new(schema))
         .nest("/api", create_routes(db));
 
     // let send_welcome_email_result = send_welcome_email("kumarchandandbg1@gmail.com", "chandan").await;
@@ -62,6 +64,18 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     // }
 
     info!("Starting server at http://127.0.0.0:8080");
+    // let res = mail::mails::send_welcome_email("kumarchandan41u@gmail.com", "huma").await;
+
+    // match res {
+    //     Ok(_) => {
+    //         info!("Email sent successfully");
+    //     }
+    //     Err(e) => {
+    //         info!("Error sending email: {:?}", e);
+    //     }
+    // }
+
+
 
     let listener = tokio::net::TcpListener::bind("127.0.0.0:8080")
         .await

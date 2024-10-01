@@ -34,10 +34,17 @@ struct CustomResponse {
 
 #[derive(serde::Deserialize)]
 pub struct UserRegistationData {
-    full_name: String,
-    email: String,
-    password: String,
+  pub  full_name: String,
+  pub  email: String,
+  pub  password: String,
 }
+
+#[derive(serde::Deserialize)]
+pub struct UserLoginData {
+   pub email: String,
+   pub password: String,
+}
+
 
 #[derive(serde::Deserialize)]
 pub struct VerifyToken {
@@ -45,10 +52,10 @@ pub struct VerifyToken {
 }
 
 #[derive(serde::Serialize)]
-struct UserResponse {
-    full_name: String,
-    email: String,
-    x_auth_token: String,
+pub struct UserResponse {
+   pub full_name: String,
+   pub email: String,
+   pub x_auth_token: String,
 }
 
 // Registration Handler
@@ -57,6 +64,7 @@ pub async fn sign_up(
     Json(data): Json<UserRegistationData>,
 ) -> Result<impl IntoResponse, AppError> {
     let db: &DatabaseConnection = &app_state.database;
+
 
     // Hash the password and create a new user
     let user_active = users::ActiveModel {
@@ -224,7 +232,7 @@ pub async fn verify_email(
 // Login handler
 pub async fn login(
     State(app_state): State<AppState>,
-    Json(data): Json<UserRegistationData>,
+    Json(data): Json<UserLoginData>,
 ) -> Result<impl IntoResponse, AppError> {
     let db: &DatabaseConnection = &app_state.database;
 
@@ -243,6 +251,7 @@ pub async fn login(
 
     if let Some(user) = user {
         // Check if the user is verified
+        println!("user {:?}", user);
         if !user.is_verdified.unwrap() {
             // Create a verification token
             let verification_token = uuid::Uuid::new_v4().to_string();
