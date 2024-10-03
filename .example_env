@@ -1,0 +1,12 @@
+DATABASE_URL="postgresql://postgres:12345@localhost:5432/openstudyindia"
+
+JWT_SECRET_KEY="JWT_SECRET_KEY"
+
+# COMPLEXITY_LIMIT=
+# DEPTH_LIMIT=
+SERVER_HOST_URL="127.0.0.0:8080/api"
+
+SMTP_USERNAME="example@gmail.com"
+SMTP_PASSWORD="your password"
+SMTP_SERVER="smtp.gmail.com"
+SMTP_PORT=567
